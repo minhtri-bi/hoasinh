@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Sinh Hóa - Enhanced</title>
+<style>
+:root {
+  --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --card-bg: #ffffff;
+  --text: #2d3748;
+  --text-secondary: #718096;
+  --primary: #667eea;
+  --primary-hover: #5a67d8;
+  --success: #48bb78;
+  --error: #f56565;
+  --warning: #ed8936;
+  --shadow: 0 10px 40px rgba(0,0,0,0.1);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark {
+  --bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  --card-bg: #2d3748;
+  --text: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --primary: #805ad5;
+  --primary-hover: #6b46c1;
+  --shadow: 0 10px 40px rgba(0,0,0,0.3);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+header {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+header:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Search */
+.search-container {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+.search-container:focus-within {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+#search {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  color: var(--text);
+  transition: var(--transition);
+  outline: none;
+}
+
+#search:focus {
+  border-color: var(--primary);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+#search::placeholder {
+  color: var(--text-secondary);
+}
+
+#searchResults {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 12px;
+}
+
+#searchResults div {
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: rgba(102, 126, 234, 0.05);
+}
+
+#searchResults div:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateX(8px);
+}
+
+/* Question Card */
+.question-card {
+  background: var(--card-bg);
+  padding: 32px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+#question {
+  font-size: 20px;
+  line-height: 1.6;
+  font-weight: 600;
+  margin-bottom: 24px;
+  min-height: 60px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.options button {
+  padding: 16px 20px;
+  font-size: 16px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.options button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.options button:hover::before {
+  left: 100%;
+}
+
+.options button:hover {
+  border-color: var(--primary);
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.options button:active {
+  transform: translateX(8px) scale(0.98);
+}
+
+.options button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.options button.correct {
+  background: var(--success) !important;
+  color: white !important;
+  border-color: var(--success) !important;
+  animation: successPulse 0.6s ease;
+}
+
+.options button.wrong {
+  background: var(--error) !important;
+  color: white !important;
+  border-color: var(--error) !important;
+  animation: shake 0.5s ease;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Tip */
+#tip {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  font-size: 15px;
+  line-height: 1.6;
+  border-left: 4px solid var(--primary);
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progress */
+.stats-container {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+#progress {
+  width: 100%;
+  height: 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+#progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  border-radius: 20px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+#progressBar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+#score {
+  display: flex;
+  justify-content: space-around;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.score-value {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  margin-top: 16px;
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Answered Block */
+#answeredBlock {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-top: 24px;
+}
+
+#answeredList {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 16px;
+}
+
+#answeredList li {
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 10px;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid var(--primary);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+/* Completion */
+.completion-message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  animation: bounceIn 0.8s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  header h2 { font-size: 22px; }
+  #question { font-size: 18px; }
+  .question-card { padding: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h2>🧬 Quiz Sinh Hóa</h2>
+    <button id="darkToggle" class="icon-btn">🌙</button>
+  </header>
+
+  <div class="search-container">
+    <input type="search" id="search" placeholder="🔍 Tìm kiếm câu hỏi..." />
+    <div id="searchResults"></div>
+  </div>
+
+  <div class="question-card">
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+    <div id="tip"></div>
+  </div>
+
+  <div class="stats-container">
+    <div id="progress"><div id="progressBar"></div></div>
+    <div id="score">
+      <div class="score-item">
+        <span class="score-label">Điểm</span>
+        <span class="score-value" id="scoreValue">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Streak</span>
+        <span class="score-value" id="streakValue">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Hoàn thành</span>
+        <span class="score-value" id="completionValue">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <button id="next" class="btn">Câu tiếp theo →</button>
+
+  <div id="answeredBlock">
+    <button id="toggleAnswered" class="btn btn-secondary">📋 Câu đã trả lời</button>
+    <ul id="answeredList" style="display:none;"></ul>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {q:"Câu nào sau đây là đúng về NADH và FADH2 là nhân tố trong phản ứng redox?", options:["NADH và FADH2 là nhân tố chính nhận electron từ nhiên liệu","Khử xảy ra tự do","Một chất đặc biệt mất electron","Trong oxy hóa hợp chất mất electron","Mọi quá trình oxy hóa phải đi kèm với một quá trình khử"], answer:0, tip:"✅ NADH/FADH2 là chất mang electron chính trong tế bào, đưa electron từ phân tử nhiên liệu đến chuỗi hô hấp."},
+  {q:"Câu nào sau đây là đúng liên quan đến sự thay đổi năng lượng tự do trong quá trình oxy hóa?", options:["ΔG là dương với tốc độ của phản ứng","ΔG không cung cấp thông tin về tốc độ của phản ứng","Tất cả các câu đều đúng","Không có câu nào là đúng","Không có câu nào là đúng"], answer:1, tip:"✅ ΔG chỉ cho biết khả năng tự phát, không liên quan đến tốc độ phản ứng."},
+  {q:"Amino acid phosphoryl hóa nào được sử dụng để phân biệt vật không xương sống theo cách tương tự?", options:["phosphoserine","phosphohistidine","phosphoaspartate","phosphotyrosine","phosphotyrosine"], answer:3, tip:"✅ Phosphotyrosine thường liên quan đến điều hòa tín hiệu trong sinh vật không xương sống."},
+  {q:"Câu nào là sai đối với các cofactor nicotinamide?", options:["Dạng oxy hóa có điện tích dương","Dạng khử có hệ số hấp thu lớn ở 340 nm","Nồng độ tế bào của NAD+/NADH thường gần 1 picomolar","Các phản ứng oxy hóa-khử với nicotinamides thường liên quan đến chuyển hydride","Các enzyme chuyển giao hydride đặc hiệu về mặt không gian"], answer:2, tip:"✅ Nồng độ NAD+/NADH trong tế bào ~1 mM, không phải picomolar."},
+  {q:"Câu nào về năng lượng tự do Gibbs là sai?", options:["Tại trạng thái cân bằng, ΔG = 0","ΔG° = -RT ln Keq","ΔG° là hằng số ở nhiệt độ cho trước","ΔG phụ thuộc vào nồng độ ban đầu","ΔG° cho phản ứng thuận và ngược có dấu trái ngược"], answer:3, tip:"✅ ΔG° chỉ phụ thuộc vào trạng thái chuẩn, ΔG thực tế mới phụ thuộc nồng độ ban đầu."},
+  {q:"ΔG° cho phản ứng acetyl-CoA + H2O → acetate + CoASH + H+ là?", options:["-34.1 kJ/mol","-32.2 kJ/mol","-30.3 kJ/mol","+41.6 kJ/mol","+34.1 kJ/mol"], answer:0, tip:"✅ Phản ứng thủy phân acetyl-CoA rất thuận lợi, tỏa năng lượng ~ -34 kJ/mol."},
+  {q:"Điểm khác biệt trong các ước chuẩn nhiệt động học của sinh hóa so với đường quy ước động?", options:["Nhiệt độ chuẩn là 25°C","Nồng độ chuẩn của [H+] là 10^{-7} M; pH = 7.0","Giá trị của ΔG° là hằng số","Nồng độ ban đầu mỗi thành phần là 1.0 M","Áp suất chuẩn là 1 atm"], answer:1, tip:"✅ Sinh hóa sử dụng pH 7 làm chuẩn, khác với hóa lý thông thường."},
+  {q:"Atom nào là carbon bị oxy hóa nhẹ nhất trong đường ketohexose?", options:["C-1","C-2","C-3","C-5","C-6"], answer:4, tip:"✅ C-6 là carbon cuối chuỗi, ít bị oxy hóa, C-1 aldehyde dễ bị oxy hóa nhất."},
+  {q:"Với phản ứng A + B → C + D, ΔG° = -60 kJ/mol. Phản ứng bắt đầu với 10 mM A, không có B. Sau 24 giờ, 2 mM B, 8 mM A. Câu nào đúng?", options:["A và B đạt cân bằng","Đang tiến về cân bằng nhưng chưa đạt","Không thể đạt cân bằng","ΔG thực tế dương","ΔG thực tế âm"], answer:1, tip:"✅ ΔG < 0 nên phản ứng tự phát nhưng chưa đạt cân bằng."},
+  {q:"Trong phản ứng Glyceraldehyde-3-phosphate + Pi + NAD+ → 1,3-bisphosphoglycerate + NADH + H+, chất khử là?", options:["1,3-bisphosphoglycerate","NADH","H+","NADH","NAD+"], answer:0, tip:"✅ Glyceraldehyde-3-phosphate bị oxy hóa, truyền electron cho NAD+ → NADH. Nó là chất khử."},
+  {q:"Trong glycolysis, glucose 1-phosphate → fructose 6-phosphate trong hai phản ứng liên tiếp, ΔG° tổng là?", options:["-8.8 kJ/mol","-7.1 kJ/mol","-5.4 kJ/mol","+5.4 kJ/mol","+8.8 kJ/mol"], answer:0, tip:"✅ Hai bước liên tiếp có ΔG° âm nhẹ, phản ứng thuận một cách tự phát."},
+  {q:"Câu nào là đúng về phản ứng oxy hóa-khử sinh hóa?", options:["Chuyển thường diễn ra thông qua sự tách rời đồng phân","Trong quá trình oxy hóa, hợp chất nhận electron","Dehydrogenases thường oxy hóa các cặp carbon","Mọi quá trình oxy hóa phải đi kèm quá trình khử","Tất cả đều đúng"], answer:3, tip:"✅ Oxy hóa luôn đi kèm với khử, dehydrogenases tham gia oxy hóa carbon."},
+  {q:"Trạng thái giảm nhất của carbon là?", options:["Carbon trong nhóm alkyl","Carbon trong nhóm aldehyde","Carbon trong nhóm ketone","Carbon trong nhóm acid carboxylic","Carbon trong nhóm rượu"], answer:0, tip:"✅ Alkyl (CH3, CH2) là trạng thái bị khử nhất, ít oxy hóa."},
+  {q:"ΔG° cho phản ứng 3-phosphoglycerate → 2-phosphoglycerate là?", options:["+0.1 kJ/mol","+0.6 kJ/mol","-0.6 kJ/mol","-1.1 kJ/mol","-4.4 kJ/mol"], answer:2, tip:"✅ Phản ứng gần cân bằng, ΔG° ~ -0.6 kJ/mol."},
+  {q:"Sự thủy phân ATP có ΔG° = -30.5 kJ/mol nhưng vẫn ổn định trong dung dịch vì?", options:["Tăng entropy","Cộng hưởng","Phân cực","Năng lượng kích hoạt cao","Tautomer hóa"], answer:3, tip:"✅ ATP ổn định do năng lượng kích hoạt cao, phản ứng cần enzyme để diễn ra."},
+  {q:"Dưới điều kiện chuẩn, sự oxy hóa FADH2 tự do bởi ubiquinone có đủ năng lượng để hình thành ATP?", options:["Không, vì -3.6 kJ/mol","Không, vì 50.9 kJ/mol","Không, vì -25.5 kJ/mol","Có, vì 33.6 kJ/mol","Có, vì 50.9 kJ/mol"], answer:4, tip:"✅ ΔG° tỏa ~50.9 kJ/mol, đủ năng lượng để tổng hợp ATP."},
+  {q:"Nguyên tử carbon nào ở trạng thái oxy hóa cao nhất?", options:["Alkyl","Ketone","Acid carboxylic","Rượu","Aldehyde"], answer:2, tip:"✅ Carbon trong nhóm acid carboxylic có trạng thái oxy hóa cao nhất."},
+  {q:"ΔG° cho sự thủy phân ATP tăng gấp đôi nồng độ ATP sẽ tác động gì?", options:["Tăng 1.7 kJ/mol","Giảm 1.7 kJ/mol","Không thay đổi","Tăng gấp đôi","Giảm một nửa"], answer:0, tip:"✅ ΔG = ΔG° + RT ln[ATP], tăng nồng độ ATP làm ΔG tăng ~1.7 kJ/mol."},
+  {q:"Phản ứng sinh hóa nào KHÔNG do ligase thực hiện?", options:["Pyruvate carboxylase","Acetyl-CoA carboxylase","Succinyl-CoA synthetase","Glutamine synthetase","Aminoacyl-tRNA synthetase"], answer:0, tip:"✅ Pyruvate carboxylase là carboxylase, không phải ligase."},
+  {q:"Cấu trúc NAD+ KHÔNG gồm?", options:["Một nucleotide flavin","Liên kết phosphoanhydride","Nucleotide adenine","Nicotinamide","Hai đường ribose"], answer:0, tip:"✅ NAD+ có adenine và nicotinamide, không có flavin."},
+  {q:"Phản ứng ATP → ADP + Pi là ví dụ của?", options:["Cắt đứt sắp xếp nội bộ","Gốc tự do","Chuyển nhóm","Oxy hóa-khử","Đồng phân hóa"], answer:2, tip:"✅ Đây là phản ứng chuyển nhóm phosphate."},
+  {q:"Phản ứng oxy hóa-khử nào KHÔNG diễn ra dựa trên sản phẩm và chất phản ứng?", options:["I và IV","I, IV và V","II","II và III","IV và V"], answer:1, tip:"✅ Dựa trên ΔG và năng lượng điện hóa, I, IV, V không thuận."},
+  {q:"ΔG° cho glucose-6-phosphate → glucose-1-phosphate, K'eq = 0.05 tại 298 K?", options:["7.3 kJ/mol","7.6 kJ/mol","-7.3 kJ/mol","-7.6 kJ/mol","-22.0 kJ/mol"], answer:0, tip:"✅ ΔG° = -RT ln K'eq → dương 7.3 kJ/mol vì K'eq < 1."},
+  {q:"Dưới điều kiện chuẩn, sự oxy hóa NADH bởi FAD tự do sẽ?", options:["Không, ΔE° = -0.219 V","Không, 9.7 kJ/mol","Không, 19.5 kJ/mol","Không, 104.2 kJ/mol","Có, 13 kJ/mol"], answer:0, tip:"✅ ΔE° < 0 nên phản ứng không tự phát."},
+  {q:"Phân tử nào KHÔNG là chất mang electron phổ biến?", options:["NAD","NADP","FMN","FAD","AMP"], answer:4, tip:"✅ AMP không phải chất mang electron, các chất còn lại là cofactors."},
+  {q:"Nguyên tử nào có độ âm điện cao nhất?", options:["N","N","P","O","S"], answer:3, tip:"✅ Oxy là nguyên tử có độ âm điện cao nhất trong các lựa chọn."},
+  {q:"Với phản ứng A + B → C + D, K'eq = 10^4. Bắt đầu 1 mM A, 0 B, sau 24h, 2 mM B và 8 mM A, câu nào đúng?", options:["A và B đạt cân bằng","Đang tiến về cân bằng nhưng chưa đạt","Không thể đạt cân bằng","ΔG thực tế dương","ΔG thực tế âm"], answer:1, tip:"✅ K'eq lớn nhưng chưa đạt cân bằng, ΔG < 0."},
+  {q:"Sự thủy phân acetyl phosphate ΔG' ≈ -42 kJ/mol, yếu tố đóng góp lớn nhất?", options:["Hút điện","Phân cực","Cộng hưởng","Tautomer hóa","Tautomer hóa"], answer:2, tip:"✅ Cộng hưởng của sản phẩm làm ổn định và tỏa năng lượng."},
+  {q:"Nhóm nào KHÔNG phải là điện tử?", options:["Proton","Sulfhydryl","Imine đã proton hóa","Carbonyl","Phosphoryl"], answer:0, tip:"✅ Proton không phải electron donor."},
+  {q:"Câu nào đúng cho hằng số cân bằng?", options:["Không phụ thuộc nhiệt độ","Khi K lớn, ΔG° âm","Có thể tính nếu biết nồng độ tại cân bằng","ΔG thực tế phụ thuộc nồng độ ban đầu","Luôn dương"], answer:2, tip:"✅ K từ nồng độ cân bằng, ΔG° liên quan đến K."},
+  {q:"Hằng số cân bằng phân ly acid lactic 1.38 × 10^{-4}, ΔG' là?", options:["16.3 kJ/mol","-16.8 kJ/mol","19.9 kJ/mol","-22.0 kJ/mol","22.0 kJ/mol"], answer:1, tip:"✅ ΔG' = -RT ln Keq ≈ -16.8 kJ/mol."},
+  {q:"Sự thủy phân phosphoenolpyruvate ΔG' ≈ -62 kJ/mol, yếu tố lớn nhất?", options:["Hút điện","Phân cực","Cộng hưởng","Tautomer hóa","Tautomer hóa"], answer:2, tip:"✅ Cộng hưởng giúp sản phẩm ổn định, năng lượng tỏa lớn."},
+  {q:"Câu nào đúng với thay đổi năng lượng tự do thực tế?", options:["Nồng độ sản phẩm thấp ΔG âm và lớn","Sản phẩm cao ΔG dương và lớn","Sản phẩm thấp ΔG dương và lớn","Sản phẩm cao ΔG âm và lớn","Cân bằng ΔG = 0"], answer:0, tip:"✅ ΔG thực tế phụ thuộc nồng độ sản phẩm và phản ứng tự phát."},
+  {q:"Nhóm nào KHÔNG phải nucleophile?", options:["Proton","Carbanion","Hydroxide","Acid carboxylic","Amine"], answer:0, tip:"✅ Proton không phải nucleophile."},
+  {q:"Chuỗi bên acid amin nào là nucleophile ở pH 7?", options:["Pro","Phe","Asp","Leu","Cys"], answer:4, tip:"✅ Cys có nhóm -SH, là nucleophile mạnh."},
+  {q:"Cặp oxy hóa-khử nào tham gia oxy hóa sinh học?", options:["Fe2+ / Fe3+","NADP+ / NAD+","FMN / FADH2","Succinate / Fumarate","Fe2+, Fe3+, Succinate / Fumarate"], answer:4, tip:"✅ Các cặp trên đều tham gia, nhiều hơn 1 cặp được sử dụng trong sinh học."},
+  {q:"Hợp chất nào có ΔG° âm nhất khi thủy phân?", options:["Acetic anhydride","Glucose 6-phosphate","Glutamate","Glycerol 3-phosphate","Phosphoenolpyruvate"], answer:4, tip:"✅ PEP có năng lượng cao, ΔG° tỏa lớn nhất."},
+  {q:"ΔG° của phản ứng A → B là -40 kJ/mol, dưới điều kiện chuẩn, phản ứng:", options:["Đang cân bằng","Không tự nhiên","Tiến nhanh","Tự phát A → B","Tự phát B → A"], answer:3, tip:"✅ ΔG < 0, phản ứng tự phát từ A → B."},
+  {q:"Nguyên tử có độ âm điện thấp nhất?", options:["C","N","H","O","S"], answer:2, tip:"✅ H có độ âm điện thấp nhất."},
+  {q:"Carbon nào oxy hóa cao nhất trong ketohexose?", options:["C-1","C-2","C-3","C-5","C-6"], answer:4, tip:"✅ C-6 alkyl, ít oxy hóa nhất, C-1 aldehyde cao nhất."},
+  {q:"Câu nào đúng?", options:["Pyruvate kinase phosphoryl hóa PEP","Hexokinase xúc tác bước không đảo ngược","1 glucose → 2 pyruvate","NADH tạo trong glycolysis","Tất cả đều đúng"], answer:4, tip:"✅ Tất cả các câu đều đúng, nhớ các bước quan trọng trong glycolysis."},
+  {q:"Tại sao khử NADH thuận lợi trong tế bào chất?", options:["Tái tạo NAD+ cho glycolysis","Cho sản xuất lactate","Lên men thay hô hấp","Lên men thay glycolysis","Không đúng"], answer:0, tip:"✅ Khử NADH tái tạo NAD+ giúp glycolysis tiếp tục."},
+  {q:"Glucose đánh dấu 14C tại C-2 chuyển thành pyruvate, carbon đánh dấu ở?", options:["Ca ba","Carbonyl","Carboxyl","Methyl","Không có"], answer:1, tip:"✅ Carbonyl từ C-2 trong glycolysis sẽ ở glyceraldehyde-3-phosphate."},
+  {q:"Enzyme xúc tác phản ứng oxy hóa trong glycolysis?", options:["Hexokinase","Pyruvate kinase","Glyceraldehyde-3-phosphate dehydrogenase","Phosphoglycerate kinase + GAPDH","Hexokinase + Pyruvate kinase"], answer:2, tip:"✅ GAPDH xúc tác oxy hóa G3P, tạo NADH."},
+  {q:"Fluoride ức chế enolase, hợp chất tích tụ?", options:["Pyruvate","2-PG + PEP","F1,6BP","3-PG","Lactate"], answer:1, tip:"✅ Enolase chuyển 2-PG → PEP, khi ức chế 2-PG và PEP tích tụ."},
+  {q:"Sản phẩm do glucose 6-phosphate isomerase xúc tác?", options:["Glucose 3-phosphate","Fructose 6-phosphate","Glucose","F1,6BP","Dihydroxyacetone phosphate"], answer:1, tip:"✅ Glucose 6-P → Fructose 6-P trong glycolysis."},
+  {q:"Trong glycolysis, fructose 1,6-bisphosphate phân tách thành hai sản phẩm 3-carbon. Tên hai sản phẩm là?", options:["Pyruvate và lactate","Glyceraldehyde 3-phosphate và dihydroxyacetone phosphate","1,3-bisphosphoglycerate và 3-phosphoglycerate","2-phosphoglycerate và phosphoenolpyruvate","Glucose 6-phosphate và fructose 6-phosphate"], answer:1, tip:"✅ F1,6BP → GAP + DHAP, bước tách 3-carbon chính."},
+  {q:"Trong cơ thiếu oxy, lactate hình thành từ glucose đánh dấu tại C-3 và C-4 sẽ đánh dấu ở?", options:["Carbon carbonyl","Carbon carboxyl","Carbon methyl","Carbon carbonyl và methyl","Carbon carboxyl và methyl"], answer:3, tip:"✅ C-3, C-4 chuyển thành carbonyl và methyl của lactate."},
+  {q:"Enzyme 2,3-BPG mutase sản xuất 2,3-BPG trong hồng cầu, amino acid quan trọng trong liên kết chất nền là?", options:["Asp","Glu","Lys","Leu","His"], answer:0, tip:"✅ Asp tham gia giữ phosphate trong active site."},
+  {q:"Galactosemia là lỗi di truyền liên quan đến?", options:["Thiếu galactokinase","Thiếu glucose 1-phosphate","Thiếu UDP-glucose:galactose 1-phosphate uridylyltransferase","Tiêu thụ quá mức galactose","Không thể chuyển hóa lactose"], answer:2, tip:"✅ Lỗi phổ biến nhất: thiếu GALT, gây galactosemia."},
+  {q:"Khi 2 phân tử ribulose 5-phosphate chuyển thành pyruvate, bao nhiêu ATP và NADH được sản xuất?", options:["4 ATP và 2 NADH","5 ATP và 3 NADH","8 ATP và 5 NADH","10 ATP và 5 NADH","10 ATP và 6 NADH"], answer:4, tip:"✅ Theo pentose phosphate pathway, 2 ribulose-5P → pyruvate, năng lượng tổng hợp ~10 ATP, 6 NADH."},
+  {q:"Trong glycolysis, các bước không đảo ngược là?", options:["1,3,10","1,2,3","1,3,5,8","3,6,10","1,3,7"], answer:0, tip:"✅ Hexokinase (1), PFK (3), pyruvate kinase (10) không đảo ngược."},
+  {q:"Câu nào liên quan đến glycolysis?", options:["Sử dụng glucose tạo 2 pyruvate","Dùng 2 ATP tạo 4 ATP, net 2 ATP","Tạo 2 NADH","Xảy ra trong tế chất","Tất cả các câu trên"], answer:4, tip:"✅ Tất cả đều đúng, tổng quát về glycolysis."}
+];
+
+let unanswered = [...questions];
+let answeredQuestions = [];
+let currentQuestion = null;
+let score = 0;
+let streak = 0;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const tipEl = document.getElementById("tip");
+const nextBtn = document.getElementById("next");
+const searchInput = document.getElementById("search");
+const searchResults = document.getElementById("searchResults");
+const darkToggle = document.getElementById("darkToggle");
+const toggleAnsweredBtn = document.getElementById("toggleAnswered");
+const answeredListEl = document.getElementById("answeredList");
+const scoreValueEl = document.getElementById("scoreValue");
+const streakValueEl = document.getElementById("streakValue");
+const completionValueEl = document.getElementById("completionValue");
+const progressBar = document.getElementById("progressBar");
+
+function updateScore(correct){
+  if(correct) { 
+    score+=10; 
+    streak++; 
+  } else { 
+    streak=0; 
+  }
+  scoreValueEl.textContent = score;
+  streakValueEl.textContent = streak;
+}
+
+function loadQuestion(q){
+  currentQuestion = q;
+  questionEl.textContent = q.q;
+  optionsEl.innerHTML = "";
+  tipEl.textContent = "";
+  tipEl.style.display = "none";
+  
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = opt;
+    btn.addEventListener("click", ()=>{
+      const correct = (i===q.answer);
+      btn.classList.add(correct ? "correct" : "wrong");
+      tipEl.innerHTML = q.tip;
+      tipEl.style.display = "block";
+      updateScore(correct);
+      
+      if(!answeredQuestions.includes(q)){
+        answeredQuestions.push(q);
+        updateAnsweredBlock();
+      }
+      unanswered = unanswered.filter(ques => ques!==q);
+      optionsEl.querySelectorAll("button").forEach(b=>b.disabled=true);
+      updateProgress();
+    });
+    optionsEl.appendChild(btn);
+  });
+}
+
+function updateAnsweredBlock(){
+  answeredListEl.innerHTML="";
+  answeredQuestions.forEach(q=>{
+    const li = document.createElement("li");
+    li.textContent=q.q;
+    answeredListEl.appendChild(li);
+  });
+}
+
+function randomQuestion(){
+  if(unanswered.length===0){
+    questionEl.innerHTML="<div class='completion-message'>🎉 Bạn đã hoàn thành tất cả câu hỏi!</div>";
+    optionsEl.innerHTML="";
+    tipEl.textContent="";
+    tipEl.style.display="none";
+    nextBtn.style.display="none";
+    return;
+  }
+  const idx = Math.floor(Math.random()*unanswered.length);
+  loadQuestion(unanswered[idx]);
+}
+
+function updateProgress(){
+  const pct = ((answeredQuestions.length)/questions.length)*100;
+  progressBar.style.width = pct+"%";
+  completionValueEl.textContent = Math.round(pct)+"%";
+}
+
+searchInput.addEventListener("input", ()=>{
+  const val = searchInput.value.toLowerCase();
+  searchResults.innerHTML="";
+  if(val.length===0) return;
+  
+  questions.forEach(q=>{
+    if(q.q.toLowerCase().includes(val)){
+      const div = document.createElement("div");
+      div.innerHTML = q.q.replace(new RegExp(val,'gi'), m=>`<span style="background:${document.body.classList.contains('dark')?'#805ad5':'#ffd700'}; padding:2px 4px; border-radius:3px;">${m}</span>`);
+      div.addEventListener("click", ()=>{
+        loadQuestion(q);
+        searchResults.innerHTML="";
+        searchInput.value="";
+      });
+      searchResults.appendChild(div);
+    }
+  });
+});
+
+darkToggle.addEventListener("click", ()=>{ 
+  document.body.classList.toggle("dark");
+  darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
+
+nextBtn.addEventListener("click", randomQuestion);
+
+toggleAnsweredBtn.addEventListener("click", ()=>{
+  answeredListEl.style.display = answeredListEl.style.display==="none"?"block":"none";
+});
+
+randomQuestion();
+updateProgress();
+</script>
+</body>
+</html>
