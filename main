@@ -3,111 +3,512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Sinh Hóa - Best Version</title>
+<title>Quiz Sinh Hóa - Enhanced</title>
 <style>
 :root {
-  --bg: #fff;
-  --text: #111;
-  --primary: #4caf50;
-  --highlight: #ffeb3b;
-  --dark-bg: #121212;
-  --dark-text: #eee;
-  --wrong: #f44336;
-  --correct: #4caf50;
+  --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --card-bg: #ffffff;
+  --text: #2d3748;
+  --text-secondary: #718096;
+  --primary: #667eea;
+  --primary-hover: #5a67d8;
+  --success: #48bb78;
+  --error: #f56565;
+  --warning: #ed8936;
+  --shadow: 0 10px 40px rgba(0,0,0,0.1);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-* { box-sizing: border-box; }
-body {
+
+body.dark {
+  --bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  --card-bg: #2d3748;
+  --text: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --primary: #805ad5;
+  --primary-hover: #6b46c1;
+  --shadow: 0 10px 40px rgba(0,0,0,0.3);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+* { 
+  box-sizing: border-box; 
   margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
-  transition: 0.3s;
+  min-height: 100vh;
+  padding: 20px;
+  transition: var(--transition);
 }
-body.dark {
-  background: var(--dark-bg);
-  color: var(--dark-text);
-}
+
 .container {
-  max-width: 480px;
-  margin: auto;
-  padding: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease;
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
 header {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 24px;
+  transition: var(--transition);
 }
-header h2 { margin: 0; }
-button, input[type=search] {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+
+header:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
-button:hover { cursor: pointer; }
-#question { margin: 15px 0; font-size: 18px; line-height: 1.4; transition: 0.3s; }
-.options button {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  text-align: left;
-  background: #eee;
-  transition: 0.2s;
+
+header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.options button:hover { transform: scale(1.02); background: var(--primary); color: #fff; }
-#tip {
-  margin-top: 10px;
-  font-size: 14px;
-  padding: 8px;
-  border-radius: 6px;
-  background: #f1f1f1;
-}
-#tip.dark { background: #222; }
-#searchResults {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
-#searchResults div {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 24px;
   cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#searchResults div:hover { background: var(--primary); color: #fff; }
-#answeredBlock { margin-top: 15px; }
-#answeredList li { margin: 4px 0; }
-#score { margin-top: 10px; font-weight: bold; }
-#progress { width: 100%; background: #ddd; height: 15px; border-radius: 8px; margin: 10px 0; }
-#progressBar { height: 15px; background: var(--primary); width: 0%; border-radius: 8px; transition: 0.3s; }
+
+.icon-btn:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Search */
+.search-container {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+.search-container:focus-within {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+#search {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  color: var(--text);
+  transition: var(--transition);
+  outline: none;
+}
+
+#search:focus {
+  border-color: var(--primary);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+#search::placeholder {
+  color: var(--text-secondary);
+}
+
+#searchResults {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 12px;
+}
+
+#searchResults div {
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: rgba(102, 126, 234, 0.05);
+}
+
+#searchResults div:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateX(8px);
+}
+
+/* Question Card */
+.question-card {
+  background: var(--card-bg);
+  padding: 32px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+#question {
+  font-size: 20px;
+  line-height: 1.6;
+  font-weight: 600;
+  margin-bottom: 24px;
+  min-height: 60px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.options button {
+  padding: 16px 20px;
+  font-size: 16px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.options button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.options button:hover::before {
+  left: 100%;
+}
+
+.options button:hover {
+  border-color: var(--primary);
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.options button:active {
+  transform: translateX(8px) scale(0.98);
+}
+
+.options button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.options button.correct {
+  background: var(--success) !important;
+  color: white !important;
+  border-color: var(--success) !important;
+  animation: successPulse 0.6s ease;
+}
+
+.options button.wrong {
+  background: var(--error) !important;
+  color: white !important;
+  border-color: var(--error) !important;
+  animation: shake 0.5s ease;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Tip */
+#tip {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  font-size: 15px;
+  line-height: 1.6;
+  border-left: 4px solid var(--primary);
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progress */
+.stats-container {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+#progress {
+  width: 100%;
+  height: 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+#progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  border-radius: 20px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+#progressBar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+#score {
+  display: flex;
+  justify-content: space-around;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.score-value {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  margin-top: 16px;
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Answered Block */
+#answeredBlock {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-top: 24px;
+}
+
+#answeredList {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 16px;
+}
+
+#answeredList li {
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 10px;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid var(--primary);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+/* Completion */
+.completion-message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  animation: bounceIn 0.8s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  header h2 { font-size: 22px; }
+  #question { font-size: 18px; }
+  .question-card { padding: 24px; }
+}
 </style>
 </head>
 <body>
 <div class="container">
   <header>
-    <h2>Quiz Sinh Hóa</h2>
-    <button id="darkToggle">🌙</button>
+    <h2>🧬 Quiz Sinh Hóa</h2>
+    <button id="darkToggle" class="icon-btn">🌙</button>
   </header>
 
-  <input type="search" id="search" placeholder="Tìm kiếm câu hỏi..." />
-  <div id="searchResults"></div>
+  <div class="search-container">
+    <input type="search" id="search" placeholder="🔍 Tìm kiếm câu hỏi..." />
+    <div id="searchResults"></div>
+  </div>
 
-  <div id="question"></div>
-  <div class="options" id="options"></div>
-  <div id="tip"></div>
+  <div class="question-card">
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+    <div id="tip"></div>
+  </div>
 
-  <div id="progress"><div id="progressBar"></div></div>
-  <div id="score">Điểm: 0 | Streak: 0</div>
+  <div class="stats-container">
+    <div id="progress"><div id="progressBar"></div></div>
+    <div id="score">
+      <div class="score-item">
+        <span class="score-label">Điểm</span>
+        <span class="score-value" id="scoreValue">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Streak</span>
+        <span class="score-value" id="streakValue">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Hoàn thành</span>
+        <span class="score-value" id="completionValue">0%</span>
+      </div>
+    </div>
+  </div>
 
-  <button id="next">Câu tiếp theo</button>
+  <button id="next" class="btn">Câu tiếp theo →</button>
 
   <div id="answeredBlock">
-    <button id="toggleAnswered">📋 Câu đã trả lời</button>
+    <button id="toggleAnswered" class="btn btn-secondary">📋 Câu đã trả lời</button>
     <ul id="answeredList" style="display:none;"></ul>
   </div>
 </div>
 
 <script>
-// ===== QUESTIONS =====
 const questions = [
   {q:"Câu nào sau đây là đúng về NADH và FADH2 là nhân tố trong phản ứng redox?", options:["NADH và FADH2 là nhân tố chính nhận electron từ nhiên liệu","Khử xảy ra tự do","Một chất đặc biệt mất electron","Trong oxy hóa hợp chất mất electron","Mọi quá trình oxy hóa phải đi kèm với một quá trình khử"], answer:0, tip:"✅ NADH/FADH2 là chất mang electron chính trong tế bào, đưa electron từ phân tử nhiên liệu đến chuỗi hô hấp."},
   {q:"Câu nào sau đây là đúng liên quan đến sự thay đổi năng lượng tự do trong quá trình oxy hóa?", options:["ΔG là dương với tốc độ của phản ứng","ΔG không cung cấp thông tin về tốc độ của phản ứng","Tất cả các câu đều đúng","Không có câu nào là đúng","Không có câu nào là đúng"], answer:1, tip:"✅ ΔG chỉ cho biết khả năng tự phát, không liên quan đến tốc độ phản ứng."},
@@ -164,16 +565,12 @@ const questions = [
   {q:"Câu nào liên quan đến glycolysis?", options:["Sử dụng glucose tạo 2 pyruvate","Dùng 2 ATP tạo 4 ATP, net 2 ATP","Tạo 2 NADH","Xảy ra trong tế chất","Tất cả các câu trên"], answer:4, tip:"✅ Tất cả đều đúng, tổng quát về glycolysis."}
 ];
 
-
-
-// ===== STATE =====
 let unanswered = [...questions];
 let answeredQuestions = [];
 let currentQuestion = null;
 let score = 0;
 let streak = 0;
 
-// ===== DOM =====
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const tipEl = document.getElementById("tip");
@@ -183,14 +580,20 @@ const searchResults = document.getElementById("searchResults");
 const darkToggle = document.getElementById("darkToggle");
 const toggleAnsweredBtn = document.getElementById("toggleAnswered");
 const answeredListEl = document.getElementById("answeredList");
-const scoreEl = document.getElementById("score");
+const scoreValueEl = document.getElementById("scoreValue");
+const streakValueEl = document.getElementById("streakValue");
+const completionValueEl = document.getElementById("completionValue");
 const progressBar = document.getElementById("progressBar");
 
-// ===== FUNCTIONS =====
 function updateScore(correct){
-  if(correct) { score+=10; streak++; }
-  else { streak=0; }
-  scoreEl.textContent = `Điểm: ${score} | Streak: ${streak}`;
+  if(correct) { 
+    score+=10; 
+    streak++; 
+  } else { 
+    streak=0; 
+  }
+  scoreValueEl.textContent = score;
+  streakValueEl.textContent = streak;
 }
 
 function loadQuestion(q){
@@ -198,15 +601,18 @@ function loadQuestion(q){
   questionEl.textContent = q.q;
   optionsEl.innerHTML = "";
   tipEl.textContent = "";
+  tipEl.style.display = "none";
+  
   q.options.forEach((opt,i)=>{
     const btn = document.createElement("button");
     btn.textContent = opt;
     btn.addEventListener("click", ()=>{
       const correct = (i===q.answer);
-      btn.style.background = correct ? "green" : "red";
-      tipEl.innerHTML = correct ? "✅ Đúng: " + q.tip : "❌ Sai. " + q.tip;
-      tipEl.classList.toggle("dark", document.body.classList.contains("dark"));
+      btn.classList.add(correct ? "correct" : "wrong");
+      tipEl.innerHTML = q.tip;
+      tipEl.style.display = "block";
       updateScore(correct);
+      
       if(!answeredQuestions.includes(q)){
         answeredQuestions.push(q);
         updateAnsweredBlock();
@@ -230,9 +636,11 @@ function updateAnsweredBlock(){
 
 function randomQuestion(){
   if(unanswered.length===0){
-    questionEl.textContent="🎉 Bạn đã hoàn thành tất cả câu hỏi!";
+    questionEl.innerHTML="<div class='completion-message'>🎉 Bạn đã hoàn thành tất cả câu hỏi!</div>";
     optionsEl.innerHTML="";
     tipEl.textContent="";
+    tipEl.style.display="none";
+    nextBtn.style.display="none";
     return;
   }
   const idx = Math.floor(Math.random()*unanswered.length);
@@ -242,17 +650,18 @@ function randomQuestion(){
 function updateProgress(){
   const pct = ((answeredQuestions.length)/questions.length)*100;
   progressBar.style.width = pct+"%";
+  completionValueEl.textContent = Math.round(pct)+"%";
 }
 
-// ===== SEARCH =====
 searchInput.addEventListener("input", ()=>{
   const val = searchInput.value.toLowerCase();
   searchResults.innerHTML="";
   if(val.length===0) return;
+  
   questions.forEach(q=>{
     if(q.q.toLowerCase().includes(val)){
       const div = document.createElement("div");
-      div.innerHTML = q.q.replace(new RegExp(val,'gi'), m=>`<span style="background:${document.body.classList.contains('dark')?'#444':'yellow'}">${m}</span>`);
+      div.innerHTML = q.q.replace(new RegExp(val,'gi'), m=>`<span style="background:${document.body.classList.contains('dark')?'#805ad5':'#ffd700'}; padding:2px 4px; border-radius:3px;">${m}</span>`);
       div.addEventListener("click", ()=>{
         loadQuestion(q);
         searchResults.innerHTML="";
@@ -263,18 +672,17 @@ searchInput.addEventListener("input", ()=>{
   });
 });
 
-// ===== DARK MODE =====
-darkToggle.addEventListener("click", ()=>{ document.body.classList.toggle("dark"); });
+darkToggle.addEventListener("click", ()=>{ 
+  document.body.classList.toggle("dark");
+  darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
 
-// ===== NEXT BUTTON =====
 nextBtn.addEventListener("click", randomQuestion);
 
-// ===== TOGGLE ANSWERED =====
 toggleAnsweredBtn.addEventListener("click", ()=>{
   answeredListEl.style.display = answeredListEl.style.display==="none"?"block":"none";
 });
 
-// ===== INIT =====
 randomQuestion();
 updateProgress();
 </script>
